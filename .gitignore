@@ -35,3 +35,5 @@ build/
 
 *.mp3
 FILE_NAME
+*.config
+music-visualizer
