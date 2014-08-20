@@ -8,7 +8,7 @@
 
  // global constants
         var FFTSIZE = 32;      // number of samples for the analyser node FFT, min 32
-        var TICK_FREQ = 500;     // how often to run the tick function, in milliseconds
+        var TICK_FREQ = 100;     // how often to run the tick function, in milliseconds
         var CIRCLES = 8;        // the number of circles to draw.  This is also the amount to break the files into, so FFTSIZE/2 needs to divide by this evenly
         var RADIUS_FACTOR = 120; // the radius of the circles, factored for which ring we are drawing
         var MIN_RADIUS = 1;     // the minimum radius of each circle
@@ -208,7 +208,7 @@
 
                     if (canvas.getContext) {
                         var ctx = canvas.getContext("2d");
-                        ctx.lineWidth = 3;
+                        ctx.lineWidth = (lastRadius/100) - (.5);
                         var x = 0,
                             y = f(0);
                         var timeout = setInterval(function() {
@@ -221,7 +221,9 @@
                                 points[x] = y;
                                 ctx.lineTo(x, y);
                                 ctx.stroke();
-                                ctx.strokeStyle = color
+
+                                ctx.strokeStyle = color;
+                                ctx.lineCap = 'round';
 
                                 if (counter > 880) {
                                     clearInterval(timeout);
