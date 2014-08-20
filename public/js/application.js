@@ -173,7 +173,11 @@
             analyserNode.getFloatFrequencyData(freqFloatData);  // this gives us the dBs
             analyserNode.getByteFrequencyData(freqByteData);  // this gives us the frequency
             analyserNode.getByteTimeDomainData(timeByteData);  // this gives us the waveform
-
+            var sum = 0;
+            for(var i = 0; i < 8; i++){
+                sum += freqByteData[i]
+            };
+            console.log((sum - 600)/10);
             var lastRadius = 0;  // we use this to store the radius of the last circle, making them relative to each other
             // run through our array from last to first, 0 will evaluate to false (quicker)
             for(var i=0; i<CIRCLES; i++) {
@@ -195,8 +199,7 @@
 
                 // circles[i].graphics = g;
             }
-
-                console.log(lastRadius);
+                // console.log(lastRadius);
                 var canvas = document.getElementById("testCanvas");
                 var points = {};
                     var counter = 0;
