@@ -13,6 +13,8 @@ gem 'activerecord', '~>4.1'
 
 gem 'rake'
 
+gem 'spotify-to-mp3'
+
 gem 'shotgun'
 
 group :test do

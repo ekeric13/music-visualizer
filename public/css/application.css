@@ -1,4 +1,4 @@
-.number-form {
+.songs-form-button {
   color: black;
 }
 
@@ -65,6 +65,10 @@ border-bottom:1px solid #313030;
 
 .restart:hover{
   color: #ff5a5f;
+}
+
+#song-list{
+  float: right;
 }
 
 

@@ -50,22 +50,52 @@
 
         $(".restart").on("dblclick",function() {
          location.reload();
-});
+        });
 
 
-     // $(".phone-number-form").on("click", function(){
-     //         var accountSid = 'ACee03763843ead63f07435ced10bc321e';
-     //         var authToken = "bd230eed787f210c82cd2ecbd2fa7e56";
-     //         var client = require('twilio')(accountSid, authToken);
 
-     //         client.messages.create({
-     //             body: "try this app: [heroku link]",
-     //             to: "+1" + $(".phone-number").val(),
-     //             from: "+16572324075"
-     //         }, function(err, message) {
-     //             process.stdout.write(message.sid);
-     //         });
-     //    });
+
+
+     $("#song-form").on("submit", function(event){
+        event.preventDefault();
+            var spotifyApi = new SpotifyWebApi();
+            var song;
+            song = $(".song").val();
+             console.log(song);
+        spotifyApi.searchTracks(song)
+          .then(function(data) {
+            $.each(data.tracks.items,  function( index, value ) {
+                $("<li id='play-song-"+index+"'> "+value.artists[0].name+" - "+value.name+" </li>").appendTo("#song-list");
+                $("#play-song-"+index+"").on('click', function(){
+
+                    $.ajax({
+                        url: "/songs",
+                        type: "post",
+
+                        data: {uri: value.uri}
+                        }).done(function(response){
+                        src = assetsPath + response;
+                        console.log(src);
+                        createjs.Sound.addEventListener("fileload", createjs.proxy(handleLoad,this)); // add an event listener for when load is completed
+                        createjs.Sound.registerSound(src);
+                        messageField.text = "loading audio";
+                        stage.update();
+                        // register sound, which preloads by default
+                        $(this).parent().parent().hide();
+                        $(".phone-number-form").parent().parent().parent().hide();
+                        $("#play-song-index").hide();
+                    });
+                });
+            });
+            console.log('Search by ' + song, data);
+          }, function(err) {
+            console.error(err);
+          });
+
+        });
+
+
+
 
 
 
