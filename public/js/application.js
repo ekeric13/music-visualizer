@@ -48,6 +48,10 @@
             $(".phone-number-form").parent().parent().parent().hide();
             });
 
+        $(".restart").on("dblclick",function() {
+         location.reload();
+});
+
 
      // $(".phone-number-form").on("click", function(){
      //         var accountSid = 'ACee03763843ead63f07435ced10bc321e';

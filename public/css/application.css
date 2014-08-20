@@ -58,4 +58,13 @@ border-bottom:1px solid #313030;
 }
 
 
+.restart{
+
+  float: right;
+}
+
+.restart:hover{
+  color: #ff5a5f;
+}
+
 
