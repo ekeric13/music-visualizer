@@ -34,6 +34,7 @@ build/
 .rvmrc
 
 *.mp3
+*.ogg
 FILE_NAME
 *.config
 music-visualizer
