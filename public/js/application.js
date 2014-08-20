@@ -6,14 +6,14 @@
 //   // See: http://docs.jquery.com/Tutorials:Introducing_$(document).ready()
 // });
 
-        // global constants
+ // global constants
         var FFTSIZE = 32;      // number of samples for the analyser node FFT, min 32
-        var TICK_FREQ = 500; //originally 20 , ideally 500   // how often to run the tick function, in milliseconds
-        var CIRCLES = 1;   // originally 8, changed to 4     // the number of circles to draw.  This is also the amount to break the files into, so FFTSIZE/2 needs to divide by this evenly
-        var RADIUS_FACTOR = 2; // originally 120 the radius of the circles, factored for which ring we are drawing
+        var TICK_FREQ = 500;     // how often to run the tick function, in milliseconds
+        var CIRCLES = 8;        // the number of circles to draw.  This is also the amount to break the files into, so FFTSIZE/2 needs to divide by this evenly
+        var RADIUS_FACTOR = 120; // the radius of the circles, factored for which ring we are drawing
         var MIN_RADIUS = 1;     // the minimum radius of each circle
-        var HUE_VARIANCE = 800;  // amount hue can vary by
-        var COLOR_CHANGE_THRESHOLD = 2;    // amount of change before we change color
+        var HUE_VARIANCE = 120;  // amount hue can vary by
+        var COLOR_CHANGE_THRESHOLD = 10;    // amount of change before we change color
         var WAVE_EMIT_THRESHOLD = 15;   // amount of positive change before we emit a wave
         var WAVE_SCALE = 0.03;  // amount to scale wave per tick
         var WAVE_RADIUS = 200; // the radius the wave images will be drawn with
@@ -22,7 +22,7 @@
         var stage;              // the stage we draw everything to
         var h, w;               // variables to store the width and height of the canvas
         var centerX, centerY;   // variables to hold the center point, so that tick is quicker
-        var messageField;       // Message display field
+        var messageField;          // Message display field
         var assetsPath = "/sounds/"; // Create a single item to load.
         var src ;  // set up our source
         var soundInstance;      // the sound instance we create
@@ -99,7 +99,7 @@
 
         }
 
-        function handleLoad(evt) {
+         function handleLoad(evt) {
             // get the context.  NOTE to connect to existing nodes we need to work in the same context.
             var context = createjs.Sound.activePlugin.context;
 
@@ -108,9 +108,6 @@
             analyserNode.fftSize = FFTSIZE;  //The size of the FFT used for frequency-domain analysis. This must be a power of two
             analyserNode.smoothingTimeConstant = 0.85;  //A value from 0 -> 1 where 0 represents no time averaging with the last analysis frame
             analyserNode.connect(context.destination);  // connect to the context.destination, which outputs the audio
-
-
-        // var average = getAverageVolume(array)
 
             // attach visualizer node to our existing dynamicsCompressorNode, which was connected to context.destination
             var dynamicsNode = createjs.Sound.activePlugin.dynamicsCompressorNode;
@@ -131,7 +128,7 @@
             } else {
                 messageField.text = "Click to start";
             }
-            stage.update();   //update the stage to show text
+            stage.update();     //update the stage to show text
 
             // wrap our sound playing in a click event so we can be played on mobile devices
             stage.addEventListener("stagemousedown", startPlayback);
@@ -159,7 +156,7 @@
             // create circles so they are persistent
             for(var i=0; i<CIRCLES; i++) {
                 var circle = circles[i] = new createjs.Shape();
-              // set the composite operation so we can blend our image colors
+                // set the composite operation so we can blend our image colors
                 circle.compositeOperation = "lighter";
                 stage.addChild(circle);
             }
@@ -176,6 +173,7 @@
             analyserNode.getFloatFrequencyData(freqFloatData);  // this gives us the dBs
             analyserNode.getByteFrequencyData(freqByteData);  // this gives us the frequency
             analyserNode.getByteTimeDomainData(timeByteData);  // this gives us the waveform
+
             var lastRadius = 0;  // we use this to store the radius of the last circle, making them relative to each other
             // run through our array from last to first, 0 will evaluate to false (quicker)
             for(var i=0; i<CIRCLES; i++) {
@@ -189,15 +187,63 @@
                 freqSum = freqSum / circleFreqChunk / 255;  // gives us a percentage out of the total possible value
                 timeSum = timeSum / circleFreqChunk / 255;  // gives us a percentage out of the total possible value
                 // NOTE in testing it was determined that i 1 thru 4 stay 0's most of the time
-                // console.log(timeSum);
-                console.log(freqSum);
 
                 // draw circle
                 lastRadius += freqSum*RADIUS_FACTOR + MIN_RADIUS;
                 var color = createjs.Graphics.getHSL((i/CIRCLES*HUE_VARIANCE+circleHue)%360, 100, 50);
-                var g = new createjs.Graphics().beginFill(color).drawCircle(centerX,centerY, lastRadius).endFill();
-                circles[i].graphics = g;
+                // var g = new createjs.Graphics().beginFill(color).drawCircle(centerX, centerY, lastRadius).endFill();
+
+                // circles[i].graphics = g;
             }
+
+                console.log(lastRadius);
+                var canvas = document.getElementById("testCanvas");
+                var points = {};
+                    var counter = 0;
+
+
+                    function f(x) {
+                        return (200) * Math.sin(0.04 * x) + (200);
+                    }
+
+                    if (canvas.getContext) {
+                        var ctx = canvas.getContext("2d");
+                        ctx.lineWidth = 3;
+                        var x = 0,
+                            y = f(0);
+                        var timeout = setInterval(function() {
+                            if(counter < 900) {
+
+                                ctx.beginPath();
+                                ctx.moveTo(x, y);
+                                x += 1;
+                                y = f(x);
+                                points[x] = y;
+                                ctx.lineTo(x, y);
+                                ctx.stroke();
+                                ctx.strokeStyle = color
+
+                                if (counter > 880) {
+                                    clearInterval(timeout);
+                                }
+                            } else {
+                                ctx.clearRect(0, 0, 960, 480);
+                                ctx.beginPath();
+                                points[x] = y;
+                                x += 1;
+                                y = f(x);
+                                for(var i = 0; i < 960; i++) {
+                                    ctx.lineTo(i, points[i + counter - 900]);
+                                }
+                                ctx.stroke();
+                            }
+                            counter++;
+                        }, 55 - (lastRadius/10));
+                    }
+
+
+
+
 
             // update our dataAverage, by removing the first element and pushing in the new last element
             dataAverage.shift();
@@ -220,11 +266,11 @@
             if(dataDiff > WAVE_EMIT_THRESHOLD){
                 // create the wave, and center it on screen:
                 var wave = new createjs.Bitmap(getWaveImg(dataDiff*0.1+1));
-        // wave.x = centerX;
-        // wave.y = centerY;
-        wave.regX = wave.regY = WAVE_RADIUS;
+                wave.x = centerX;
+                wave.y = centerY;
+                wave.regX = wave.regY = WAVE_RADIUS;
 
-        // set the expansion speed as a factor of the value difference:
+                // set the expansion speed as a factor of the value difference:
                 wave.speed = dataDiff*0.1+1;
 
                 // set the initial scale:
@@ -246,29 +292,27 @@
                 }
             }
 
-
-
             // draw the updates to stage
             stage.update();
         }
 
         function getWaveImg(thickness) {
-          // floor the thickness so we only have to deal with integer values:
-          thickness |= 0;
-          if (thickness < 1) { return null; }
+            // floor the thickness so we only have to deal with integer values:
+            thickness |= 0;
+            if (thickness < 1) { return null; }
 
-          // if we already have an image with the right thickness, return it:
-          if (waveImgs[thickness]) { return waveImgs[thickness]; }
+            // if we already have an image with the right thickness, return it:
+            if (waveImgs[thickness]) { return waveImgs[thickness]; }
 
-          // otherwise, draw the wave into a Shape instance:
-          var waveShape = new createjs.Shape();
-      waveShape.graphics.setStrokeStyle(thickness).beginStroke ("#FFF").drawCircle(0,0,WAVE_RADIUS);
+            // otherwise, draw the wave into a Shape instance:
+            var waveShape = new createjs.Shape();
+            // waveShape.graphics.setStrokeStyle(thickness).beginStroke ("#FFF").drawCircle(0,0,WAVE_RADIUS);
 
-      // cache it to create a bitmap version of the shape:
-      var r = WAVE_RADIUS+thickness;
-      waveShape.cache(-r, -r, r*2, r*2);
+            // cache it to create a bitmap version of the shape:
+            var r = WAVE_RADIUS+thickness;
+            waveShape.cache(-r, -r, r*2, r*2);
 
-      // save the image into our list, and return it:
-      waveImgs[thickness] = waveShape.cacheCanvas
-      return waveShape.cacheCanvas;
+            // save the image into our list, and return it:
+            waveImgs[thickness] = waveShape.cacheCanvas
+            return waveShape.cacheCanvas;
         }

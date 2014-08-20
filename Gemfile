@@ -14,7 +14,6 @@ gem 'activerecord', '~>4.1'
 gem 'rake'
 
 gem 'shotgun'
-require 'twilio-ruby'
 
 group :test do
   gem 'shoulda-matchers'
