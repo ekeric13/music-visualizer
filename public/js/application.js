@@ -41,7 +41,7 @@
             console.log(src);
             createjs.Sound.addEventListener("fileload", createjs.proxy(handleLoad,this)); // add an event listener for when load is completed
             createjs.Sound.registerSound(src);
-            messageField.text = "loading audio";
+            messageField.text = "click the same song in 2 minutes";
             stage.update();
               // register sound, which preloads by default
             $(this).parent().parent().hide();
@@ -68,13 +68,17 @@
                 $("<li id='play-song-"+index+"'> "+value.artists[0].name+" - "+value.name+" </li>").appendTo("#song-list");
                 $("#play-song-"+index+"").on('click', function(){
 
+                    // $(".your-song").append(value.artists[0].name+" - "+value.name)  put song name on a button
+
                     $.ajax({
                         url: "/songs",
                         type: "post",
 
-                        data: {uri: value.uri}
+                        data: {uri: value.uri, artist: value.artists[0], song: value.name}
                         }).done(function(response){
-                        src = assetsPath + response;
+                        value.uri = song
+
+                        src = assetsPath + $(this).attr("data-filename")
                         console.log(src);
                         createjs.Sound.addEventListener("fileload", createjs.proxy(handleLoad,this)); // add an event listener for when load is completed
                         createjs.Sound.registerSound(src);

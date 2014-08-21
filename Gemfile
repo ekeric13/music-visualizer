@@ -15,6 +15,8 @@ gem 'rake'
 
 gem 'spotify-to-mp3'
 
+gem 'sidekiq'
+
 gem 'shotgun'
 
 group :test do
