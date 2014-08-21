@@ -117,7 +117,7 @@
             stage.update();
               // register sound, which preloads by default
             $("#song-form").hide();
-            $(".songs-form-button").parent().parent().parent().hide();
+            $("#song-button").hide();
             $("#your-song").hide();
             $("#song-list").hide();
             });
