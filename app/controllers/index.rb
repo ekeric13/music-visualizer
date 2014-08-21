@@ -24,12 +24,23 @@ post "/songs" do
   p track
   FileUtils.mv(track, "public/sounds")
   HardWorker.perform_async(@song)
-
-
   # erb :songs
   # content_type :json
   # track = "/Users/erickennedy/Desktop/music-visualizer/app/views/songs.erb"
   # track.to_json
   # music-visualizer/app/controllers/views/songs.erb
+end
+
+
+delete "/deletesong" do
+  song = params[:uri]
+  artist = params[:artist]
+  song_title = params[:song]
+  track = "#{artist} - #{song_title}.mp3"
+  p "delete track"
+  p track
+  FileUtils.pwd
+  FileUtils.rm("public/sounds/#{track}")
+
 end
 

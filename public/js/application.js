@@ -52,6 +52,7 @@
 
         $(".restart").on("dblclick",function() {
          location.reload();
+
         });
 
         // $(".your-song").on("click", function() {
@@ -123,7 +124,20 @@
             });
 
         $(".restart").on("dblclick",function() {
-         location.reload();
+            setTimeout(function(){
+                         location.reload();
+                    }, 4000);
+
+         $.ajax({
+            url: "/deletesong",
+            type: "delete",
+            data: {uri: value.uri, artist: value.artists[0].name, song: value.name}
+            }).done(function(response){
+                console.log("delete song");
+                console.log(response);
+
+
+            })
         });
 
 
