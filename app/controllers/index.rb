@@ -1,7 +1,7 @@
-
-require 'spotify_to_mp3/spotify'
 require 'sidekiq'
-require_relative '../song_worker.rb'
+require 'spotify_to_mp3/spotify'
+require 'fileutils'
+require_relative '../workers/song_worker.rb'
 
 
 get '/' do
@@ -17,9 +17,14 @@ post "/songs" do
   @song = params[:uri]
   artist = params[:artist]
   song_title = params[:song]
-  p @song # put @song into an empty file
+   # put @song into an empty file
+  p artist
+  file = `echo #{@song} | spotify-to-mp3`
   track = "#{artist} - #{song_title}.mp3"
-  HardWorker.perform_async(@song, track)
+  p track
+  FileUtils.mv(track, "public/sounds")
+  HardWorker.perform_async(@song)
+
 
   # erb :songs
   # content_type :json

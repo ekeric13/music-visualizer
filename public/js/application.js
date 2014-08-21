@@ -34,23 +34,42 @@
         var circleFreqChunk;    // The chunk of freqByteData array that is computed per circle
         var dataAverage = [42,42,42,42];   // an array recording data for the last 4 ticks
         var waveImgs = []; // array of wave images with different stroke thicknesses
-
+        var thisuri;
 // Lets user choose a song
         $(".song-button").on("click", function() {
             src = assetsPath + $(this).attr("data-filename");
             console.log(src);
             createjs.Sound.addEventListener("fileload", createjs.proxy(handleLoad,this)); // add an event listener for when load is completed
             createjs.Sound.registerSound(src);
-            messageField.text = "click the same song in 2 minutes";
+            messageField.text = "loading audio";
             stage.update();
               // register sound, which preloads by default
             $(this).parent().parent().hide();
-            $(".phone-number-form").parent().parent().parent().hide();
+            $(".songs-form-button").parent().parent().parent().hide();
+            $("#your-song").hide();
+            $("#song-list").hide();
             });
 
         $(".restart").on("dblclick",function() {
          location.reload();
         });
+
+        // $(".your-song").on("click", function() {
+        //     src = assetsPath + $(this).attr("data-filename");
+        //     console.log(src);
+        //     createjs.Sound.addEventListener("fileload", createjs.proxy(handleLoad,this)); // add an event listener for when load is completed
+        //     createjs.Sound.registerSound(src);
+        //     messageField.text = "loading audio";
+        //     stage.update();
+        //       // register sound, which preloads by default
+        //     $(this).parent().parent().hide();
+        //     $(".songs-form-button").parent().parent().parent().hide();
+        //     $("#your-song").hide();
+        //     });
+
+        // $(".restart").on("dblclick",function() {
+        //  location.reload();
+        // });
 
 
 
@@ -67,27 +86,31 @@
             $.each(data.tracks.items,  function( index, value ) {
                 $("<li id='play-song-"+index+"'> "+value.artists[0].name+" - "+value.name+" </li>").appendTo("#song-list");
                 $("#play-song-"+index+"").on('click', function(){
-
-                    // $(".your-song").append(value.artists[0].name+" - "+value.name)  put song name on a button
-
+                    // class=your-song to a empty div.
+                    // give div a data file name
+                    // data-filename="+value.artists[0].name+" - "+value.name+".mp3
+                    $("<button class='song-button' data-filename='"+value.artists[0].name+" - "+value.name+".mp3'>"+value.artists[0].name+" - "+value.name+"</button>").appendTo("#your-song");
+                    //long-polling  - used to submit ajax
                     $.ajax({
                         url: "/songs",
                         type: "post",
 
-                        data: {uri: value.uri, artist: value.artists[0], song: value.name}
+                        data: {uri: value.uri, artist: value.artists[0].name, song: value.name}
                         }).done(function(response){
-                        value.uri = song
 
-                        src = assetsPath + $(this).attr("data-filename")
-                        console.log(src);
-                        createjs.Sound.addEventListener("fileload", createjs.proxy(handleLoad,this)); // add an event listener for when load is completed
-                        createjs.Sound.registerSound(src);
-                        messageField.text = "loading audio";
+                        thisuri = value.uri;
+
+                        // src = assetsPath + $(this).attr("data-filename")
+                        console.log(response);
+                        // createjs.Sound.addEventListener("fileload", createjs.proxy(handleLoad,this)); // add an event listener for when load is completed
+                        // createjs.Sound.registerSound(src);
+                        messageField.text = "click your song in 20 seconds";
                         stage.update();
-                        // register sound, which preloads by default
-                        $(this).parent().parent().hide();
-                        $(".phone-number-form").parent().parent().parent().hide();
-                        $("#play-song-index").hide();
+                        // stage.update();
+                        // // register sound, which preloads by default
+                        // $(this).parent().parent().hide();
+                        // $(".phone-number-form").parent().parent().parent().hide();
+                        // $("#play-song-index").hide();
                     });
                 });
             });
