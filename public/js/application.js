@@ -87,6 +87,8 @@
                 $("<li id='play-song-"+index+"'> "+value.artists[0].name+" - "+value.name+" </li>").appendTo("#song-list");
                 $("#play-song-"+index+"").on('click', function(){
                     // class=your-song to a empty div.
+                    messageField.text = "click your song in 20 seconds";
+                    stage.update();
                     // give div a data file name
                     // data-filename="+value.artists[0].name+" - "+value.name+".mp3
                     $("<button class='song-button' data-filename='"+value.artists[0].name+" - "+value.name+".mp3'>"+value.artists[0].name+" - "+value.name+"</button>").appendTo("#your-song");
@@ -105,7 +107,30 @@
                         // createjs.Sound.addEventListener("fileload", createjs.proxy(handleLoad,this)); // add an event listener for when load is completed
                         // createjs.Sound.registerSound(src);
                         messageField.text = "click your song in 20 seconds";
+
+                        $(".song-button").on("click", function() {
+            src = assetsPath + $(this).attr("data-filename");
+            console.log(src);
+            createjs.Sound.addEventListener("fileload", createjs.proxy(handleLoad,this)); // add an event listener for when load is completed
+            createjs.Sound.registerSound(src);
+            messageField.text = "loading audio";
+            stage.update();
+              // register sound, which preloads by default
+            $("#song-form").hide();
+            $(".songs-form-button").parent().parent().parent().hide();
+            $("#your-song").hide();
+            $("#song-list").hide();
+            });
+
+        $(".restart").on("dblclick",function() {
+         location.reload();
+        });
+
+
+
                         stage.update();
+
+
                         // stage.update();
                         // // register sound, which preloads by default
                         // $(this).parent().parent().hide();
