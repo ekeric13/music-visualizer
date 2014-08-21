@@ -34,131 +34,131 @@
         var circleFreqChunk;    // The chunk of freqByteData array that is computed per circle
         var dataAverage = [42,42,42,42];   // an array recording data for the last 4 ticks
         var waveImgs = []; // array of wave images with different stroke thicknesses
-        var thisuri;
+
+
+
 // Lets user choose a song
-        $(".song-button").on("click", function() {
-            src = assetsPath + $(this).attr("data-filename");
-            console.log(src);
+$(".song-button").on("click", function() {
+    src = assetsPath + $(this).attr("data-filename");
+    console.log(src);
             createjs.Sound.addEventListener("fileload", createjs.proxy(handleLoad,this)); // add an event listener for when load is completed
             createjs.Sound.registerSound(src);
             messageField.text = "loading audio";
             stage.update();
               // register sound, which preloads by default
-            $(this).parent().parent().hide();
-            $(".songs-form-button").parent().parent().parent().hide();
-            $("#your-song").hide();
-            $("#song-list").hide();
+
+              //clears buttons off screen when song plays
+              $(this).parent().parent().hide();
+              $(".songs-form-button").parent().parent().parent().hide();
+              $("#your-song").hide();
+              $("#song-list").hide();
+
+              //restart function is within play song function
+              $(".restart").on("dblclick",function() {
+               location.reload();
             });
-
-        $(".restart").on("dblclick",function() {
-         location.reload();
-
-        });
-
-        // $(".your-song").on("click", function() {
-        //     src = assetsPath + $(this).attr("data-filename");
-        //     console.log(src);
-        //     createjs.Sound.addEventListener("fileload", createjs.proxy(handleLoad,this)); // add an event listener for when load is completed
-        //     createjs.Sound.registerSound(src);
-        //     messageField.text = "loading audio";
-        //     stage.update();
-        //       // register sound, which preloads by default
-        //     $(this).parent().parent().hide();
-        //     $(".songs-form-button").parent().parent().parent().hide();
-        //     $("#your-song").hide();
-        //     });
-
-        // $(".restart").on("dblclick",function() {
-        //  location.reload();
-        // });
+});
 
 
 
 
+//lets user choose a song
+$("#song-form").on("submit", function(event){
+    event.preventDefault();
+    var spotifyApi = new SpotifyWebApi();
+    var song;
+    song = $(".song").val();
+    console.log(song);
+    spotifyApi.searchTracks(song)
+    .then(function(data) {
+        $.each(data.tracks.items,  function( index, value ) {
+            $("<li class='songs-listed' id='play-song-"+index+"'> "+value.artists[0].name+" - "+value.name+" </li>").appendTo("#song-list");
+            $("#play-song-"+index+"").on('click', function(){
 
-     $("#song-form").on("submit", function(event){
-        event.preventDefault();
-            var spotifyApi = new SpotifyWebApi();
-            var song;
-            song = $(".song").val();
-             console.log(song);
-        spotifyApi.searchTracks(song)
-          .then(function(data) {
-            $.each(data.tracks.items,  function( index, value ) {
-                $("<li class='songs-listed' id='play-song-"+index+"'> "+value.artists[0].name+" - "+value.name+" </li>").appendTo("#song-list");
-                $("#play-song-"+index+"").on('click', function(){
-                    // class=your-song to a empty div.
-                    messageField.text = "click your song in 20 seconds";
-                    stage.update();
+                    messageField.text = "please wait";
+
                     // give div a data file name
-                    // data-filename="+value.artists[0].name+" - "+value.name+".mp3
                     $("<button class='song-button' data-filename='"+value.artists[0].name+" - "+value.name+".mp3'>"+value.artists[0].name+" - "+value.name+"</button>").appendTo("#your-song");
                     //long-polling  - used to submit ajax
+                    stage.update();
+
+
+                    //LONG POLL
+                    setInterval(function(){
+                        $.ajax({ url: "/", success: function(data){
+                            messageField.text = "your song is ready";
+                            stage.update();
+                            salesGauge.setValue(data.value);
+
+                        }, dataType: "json"});
+                    }, 5000);
+
+
+                    //sends request to download song
                     $.ajax({
                         url: "/songs",
                         type: "post",
 
-                        data: {uri: value.uri, artist: value.artists[0].name, song: value.name}
-                        }).done(function(response){
 
-                        thisuri = value.uri;
+                        data: {uri: value.uri, artist: value.artists[0].name, song: value.name}
+                    }).done(function(response){
+
+                        console.log(value.artists[0].name);
+                        console.log(value.name);
 
                         // src = assetsPath + $(this).attr("data-filename")
                         console.log(response);
                         // createjs.Sound.addEventListener("fileload", createjs.proxy(handleLoad,this)); // add an event listener for when load is completed
                         // createjs.Sound.registerSound(src);
-                        messageField.text = "click your song in 20 seconds";
 
+
+
+
+                        //plays songs that have been downloaded
                         $(".song-button").on("click", function() {
-            src = assetsPath + $(this).attr("data-filename");
-            console.log(src);
+                            src = assetsPath + $(this).attr("data-filename");
+                            console.log(src);
             createjs.Sound.addEventListener("fileload", createjs.proxy(handleLoad,this)); // add an event listener for when load is completed
             createjs.Sound.registerSound(src);
             messageField.text = "loading audio";
             stage.update();
               // register sound, which preloads by default
-            $("#song-form").hide();
-            $("#song-button").hide();
-            $("#your-song").hide();
-            $("#song-list").hide();
-            });
+              $("#song-form").hide();
+              $("#song-button").hide();
+              $("#your-song").hide();
+              $("#song-list").hide();
+          });
+                        //restarts songs that have been downloaded
+                        $(".restart").on("dblclick",function() {
+                            setTimeout(function(){
+                               location.reload();
+                           }, 4000);
 
-        $(".restart").on("dblclick",function() {
-            setTimeout(function(){
-                         location.reload();
-                    }, 4000);
-
-         $.ajax({
-            url: "/deletesong",
-            type: "delete",
-            data: {uri: value.uri, artist: value.artists[0].name, song: value.name}
-            }).done(function(response){
-                console.log("delete song");
-                console.log(response);
-
-
-            })
-        });
-
-
-
+                            //deletes song from database
+                            $.ajax({
+                                url: "/deletesong",
+                                type: "delete",
+                                data: {uri: value.uri, artist: value.artists[0].name, song: value.name}
+                            }).done(function(response){
+                                console.log("delete song");
+                                console.log(response);
+                            })
+                        });
                         stage.update();
-
-
                         // stage.update();
                         // // register sound, which preloads by default
                         // $(this).parent().parent().hide();
                         // $(".phone-number-form").parent().parent().parent().hide();
                         // $("#play-song-index").hide();
                     });
-                });
-            });
-            console.log('Search by ' + song, data);
-          }, function(err) {
-            console.error(err);
-          });
-
         });
+    });
+    console.log('Search by ' + song, data);
+    }, function(err) {
+        console.error(err);
+    });
+
+});
 
 
 
@@ -273,11 +273,11 @@
             analyserNode.getFloatFrequencyData(freqFloatData);  // this gives us the dBs
             analyserNode.getByteFrequencyData(freqByteData);  // this gives us the frequency
             analyserNode.getByteTimeDomainData(timeByteData);  // this gives us the waveform
-            var sum = 0;
-            for(var i = 0; i < 8; i++){
-                sum += freqByteData[i]
-            };
-            console.log((sum - 600)/10);
+            // var sum = 0;
+            // for(var i = 0; i < 8; i++){
+            //     sum += freqByteData[i]
+            // };
+            // console.log((sum - 600)/10);
             var lastRadius = 0;  // we use this to store the radius of the last circle, making them relative to each other
             // run through our array from last to first, 0 will evaluate to false (quicker)
             for(var i=0; i<CIRCLES; i++) {
@@ -345,6 +345,7 @@
                             counter++;
                         }, 55 - (lastRadius/10));
                     }
+                    console.log(lastRadius/10);
 
 
 
