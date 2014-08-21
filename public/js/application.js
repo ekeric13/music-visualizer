@@ -85,7 +85,7 @@
         spotifyApi.searchTracks(song)
           .then(function(data) {
             $.each(data.tracks.items,  function( index, value ) {
-                $("<li id='play-song-"+index+"'> "+value.artists[0].name+" - "+value.name+" </li>").appendTo("#song-list");
+                $("<li class='songs-listed' id='play-song-"+index+"'> "+value.artists[0].name+" - "+value.name+" </li>").appendTo("#song-list");
                 $("#play-song-"+index+"").on('click', function(){
                     // class=your-song to a empty div.
                     messageField.text = "click your song in 20 seconds";
