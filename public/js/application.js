@@ -34,7 +34,8 @@
         var circleFreqChunk;    // The chunk of freqByteData array that is computed per circle
         var dataAverage = [42,42,42,42];   // an array recording data for the last 4 ticks
         var waveImgs = []; // array of wave images with different stroke thicknesses
-
+        var canvas = document.getElementById("testCanvas");
+        var interval;
 
 //initiates the view, lets user get rid of certain DOM elements on the page
 var view = new View
@@ -75,15 +76,14 @@ var playdownloadedSong = function() {
 
             //  gets rid of elements on page
             view.elements();
-          }
+}
 
 
 //lets user choose a song
 $("#song-form").on("submit", function(event){
     event.preventDefault();
     var spotifyApi = new SpotifyWebApi();
-    var song;
-    song = $(".song").val();
+    var song = $(".song").val();
     console.log(song);
     spotifyApi.searchTracks(song)
     .then(function(data) {
@@ -93,33 +93,16 @@ $("#song-form").on("submit", function(event){
             // click on song to download it
             $("#play-song-"+index+"").on('click', function(){
 
-                    messageField.text = "please wait";
+                messageField.text = "please wait";
 
-                    // give div a data file name
-                    $("<button class='song-button' data-filename='"+value.artists[0].name+" - "+value.name+".mp3'>"+value.artists[0].name+" - "+value.name+"</button>").appendTo("#your-song");
-                    //long-polling  - used to submit ajax
-                    stage.update();
+                stage.update();
 
-
-                    //LONG POLL
-                    // setInterval(function(){
-                    //     $.ajax({ url: "/", success: function(data){
-                    //         messageField.text = "your song is ready";
-                    //         stage.update();
-                    //         salesGauge.setValue(data.value);
-
-                    //     }, dataType: "json"});
-                    // }, 5000);
+                $.ajax({
+                    url: "/songs",
+                    type: "post",
 
 
-                    //sends request to download song
-
-                    $.ajax({
-                        url: "/songs",
-                        type: "post",
-
-
-                        data: {uri: value.uri, artist: value.artists[0].name, song: value.name}
+                    data: {uri: value.uri, artist: value.artists[0].name, song: value.name}
                     }).done(function(response){
 
                         console.log(value.artists[0].name);
@@ -131,12 +114,12 @@ $("#song-form").on("submit", function(event){
                         // createjs.Sound.registerSound(src);
 
                         //plays songs that have been downloaded
-                    $(".song-button").on("click", playdownloadedSong);
+
                         //restarts songs that have been downloaded
                         $(".restart").on("dblclick", function() {
                             setTimeout(function(){
-                               location.reload();
-                           }, 4000);
+                            location.reload();
+                            }, 4000);
 
                             //deletes song from database
                             $.ajax({
@@ -150,9 +133,15 @@ $("#song-form").on("submit", function(event){
                         });
 
 
+                    }).success(function(response){
+                         messageField.text = "song done";
+                         stage.update();
+                        $("<button class='song-button' data-filename='"+value.artists[0].name+" - "+value.name+".mp3'>"+value.artists[0].name+" - "+value.name+"</button>").appendTo("#your-song");
+                        $(".song-button").on("click", playdownloadedSong);
+
                     });
-        });
-    });
+                });
+            });
     console.log('Search by ' + song, data);
     }, function(err) {
         console.error(err);
@@ -270,7 +259,7 @@ $("#song-form").on("submit", function(event){
             createjs.Ticker.setInterval(TICK_FREQ);
         }
 
-        function tick(evt) {
+        function tick(evt) { setInterval(interval)
             analyserNode.getFloatFrequencyData(freqFloatData);  // this gives us the dBs
             analyserNode.getByteFrequencyData(freqByteData);  // this gives us the frequency
             analyserNode.getByteTimeDomainData(timeByteData);  // this gives us the waveform
@@ -301,13 +290,23 @@ $("#song-form").on("submit", function(event){
                 // circles[i].graphics = g;
             }
                 // console.log(lastRadius);
-                var canvas = document.getElementById("testCanvas");
+
                 var points = {};
-                    var counter = 0;
+                var counter = 0;
+
+                height = (lastRadius/10) < 38 ? 0 : (lastRadius/10) > 45 ? 200 : ((lastRadius/10) -38) * (200/ (45-38))
+                    // when < 30, lastRadius = 0
+                    // break
+                    // when > 40, lastRadius = 200
+                    // break
+                    // default 20* (lastRadius - 30)
+                    // break
+
+
 
 
                     function f(x) {
-                        return (200) * Math.sin(0.04 * x) + (200);
+                        return (height) * Math.sin(0.04 * x) + (canvas.height/2);
                     }
 
                     if (canvas.getContext) {
@@ -315,8 +314,8 @@ $("#song-form").on("submit", function(event){
                         ctx.lineWidth = (lastRadius/100) - (.5);
                         var x = 0,
                             y = f(0);
-                        var timeout = setInterval(function() {
-                            if(counter < 900) {
+                        interval = setInterval(function() {
+                            if(counter < canvas.width) {
 
                                 ctx.beginPath();
                                 ctx.moveTo(x, y);
@@ -329,18 +328,10 @@ $("#song-form").on("submit", function(event){
                                 ctx.strokeStyle = color;
                                 ctx.lineCap = 'round';
 
-                                if (counter > 880) {
-                                    clearInterval(timeout);
-                                }
+
                             } else {
-                                ctx.clearRect(0, 0, 960, 480);
-                                ctx.beginPath();
-                                points[x] = y;
-                                x += 1;
-                                y = f(x);
-                                for(var i = 0; i < 960; i++) {
-                                    ctx.lineTo(i, points[i + counter - 900]);
-                                }
+                                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                                counter = 0
                                 ctx.stroke();
                             }
                             counter++;
