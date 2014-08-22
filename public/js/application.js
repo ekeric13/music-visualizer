@@ -36,10 +36,10 @@
         var waveImgs = []; // array of wave images with different stroke thicknesses
 
 
-//this should be in the controller
+//initiates the view, lets user get rid of certain DOM elements on the page
 var view = new View
 
-// Lets user choose a song
+// Lets user choose a preloaded song
 var playPreloadedSong = function() {
     src = assetsPath + $(this).attr("data-filename");
     console.log(src);
@@ -60,18 +60,21 @@ var playPreloadedSong = function() {
 
 
 var restartPreloadedSong = function() {
+    //refreshes page
     location.reload();
 }
 
 var playdownloadedSong = function() {
-                            src = assetsPath + $(this).attr("data-filename");
-                            console.log(src);
+            src = assetsPath + $(this).attr("data-filename");
+            console.log(src);
             createjs.Sound.addEventListener("fileload", createjs.proxy(handleLoad,this)); // add an event listener for when load is completed
             createjs.Sound.registerSound(src);
             messageField.text = "loading audio";
             stage.update();
-              // register sound, which preloads by default
-              view.elements();
+            // register sound, which preloads by default
+
+            //  gets rid of elements on page
+            view.elements();
           }
 
 
@@ -86,6 +89,8 @@ $("#song-form").on("submit", function(event){
     .then(function(data) {
         $.each(data.tracks.items,  function( index, value ) {
             $("<li class='songs-listed' id='play-song-"+index+"'> "+value.artists[0].name+" - "+value.name+" </li>").appendTo("#song-list");
+
+            // click on song to download it
             $("#play-song-"+index+"").on('click', function(){
 
                     messageField.text = "please wait";
@@ -124,8 +129,6 @@ $("#song-form").on("submit", function(event){
                         console.log(response);
                         // createjs.Sound.addEventListener("fileload", createjs.proxy(handleLoad,this)); // add an event listener for when load is completed
                         // createjs.Sound.registerSound(src);
-
-
 
                         //plays songs that have been downloaded
                     $(".song-button").on("click", playdownloadedSong);
@@ -193,6 +196,7 @@ $("#song-form").on("submit", function(event){
             stage.addChild(messageField);
             stage.update();   //update the stage to show text
 
+            //plays preloaded song if clicked
             $(".song-button").on("click",  playPreloadedSong );
         }
 
