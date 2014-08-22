@@ -36,30 +36,43 @@
         var waveImgs = []; // array of wave images with different stroke thicknesses
 
 
+//this should be in the controller
+var view = new View
 
 // Lets user choose a song
-$(".song-button").on("click", function() {
+var playPreloadedSong = function() {
     src = assetsPath + $(this).attr("data-filename");
     console.log(src);
+            // register sound, which preloads by default
+            createjs.Sound.addEventListener("fileload", createjs.proxy(handleLoad,this)); // add an event listener for when load is completed
+            createjs.Sound.registerSound(src);
+            messageField.text = "loading audio";
+            stage.update();
+
+
+              //clears buttons off screen when song plays
+              view.elements();
+
+              //restart function is within play song function
+              $(".restart").on("dblclick", restartPreloadedSong);
+
+}
+
+
+var restartPreloadedSong = function() {
+    location.reload();
+}
+
+var playdownloadedSong = function() {
+                            src = assetsPath + $(this).attr("data-filename");
+                            console.log(src);
             createjs.Sound.addEventListener("fileload", createjs.proxy(handleLoad,this)); // add an event listener for when load is completed
             createjs.Sound.registerSound(src);
             messageField.text = "loading audio";
             stage.update();
               // register sound, which preloads by default
-
-              //clears buttons off screen when song plays
-              $(this).parent().parent().hide();
-              $(".songs-form-button").parent().parent().parent().hide();
-              $("#your-song").hide();
-              $("#song-list").hide();
-
-              //restart function is within play song function
-              $(".restart").on("dblclick",function() {
-               location.reload();
-            });
-});
-
-
+              view.elements();
+          }
 
 
 //lets user choose a song
@@ -84,17 +97,18 @@ $("#song-form").on("submit", function(event){
 
 
                     //LONG POLL
-                    setInterval(function(){
-                        $.ajax({ url: "/", success: function(data){
-                            messageField.text = "your song is ready";
-                            stage.update();
-                            salesGauge.setValue(data.value);
+                    // setInterval(function(){
+                    //     $.ajax({ url: "/", success: function(data){
+                    //         messageField.text = "your song is ready";
+                    //         stage.update();
+                    //         salesGauge.setValue(data.value);
 
-                        }, dataType: "json"});
-                    }, 5000);
+                    //     }, dataType: "json"});
+                    // }, 5000);
 
 
                     //sends request to download song
+
                     $.ajax({
                         url: "/songs",
                         type: "post",
@@ -113,23 +127,10 @@ $("#song-form").on("submit", function(event){
 
 
 
-
                         //plays songs that have been downloaded
-                        $(".song-button").on("click", function() {
-                            src = assetsPath + $(this).attr("data-filename");
-                            console.log(src);
-            createjs.Sound.addEventListener("fileload", createjs.proxy(handleLoad,this)); // add an event listener for when load is completed
-            createjs.Sound.registerSound(src);
-            messageField.text = "loading audio";
-            stage.update();
-              // register sound, which preloads by default
-              $("#song-form").hide();
-              $("#song-button").hide();
-              $("#your-song").hide();
-              $("#song-list").hide();
-          });
+                    $(".song-button").on("click", playdownloadedSong);
                         //restarts songs that have been downloaded
-                        $(".restart").on("dblclick",function() {
+                        $(".restart").on("dblclick", function() {
                             setTimeout(function(){
                                location.reload();
                            }, 4000);
@@ -144,12 +145,8 @@ $("#song-form").on("submit", function(event){
                                 console.log(response);
                             })
                         });
-                        stage.update();
-                        // stage.update();
-                        // // register sound, which preloads by default
-                        // $(this).parent().parent().hide();
-                        // $(".phone-number-form").parent().parent().parent().hide();
-                        // $("#play-song-index").hide();
+
+
                     });
         });
     });
@@ -196,7 +193,7 @@ $("#song-form").on("submit", function(event){
             stage.addChild(messageField);
             stage.update();   //update the stage to show text
 
-
+            $(".song-button").on("click",  playPreloadedSong );
         }
 
          function handleLoad(evt) {
