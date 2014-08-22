@@ -1,10 +1,4 @@
-// $(document).ready(function() {
-//   // This is called after the document has loaded in its entirety
-//   // This guarantees that any elements we bind to will exist on the page
-//   // when we try to bind to them
 
-//   // See: http://docs.jquery.com/Tutorials:Introducing_$(document).ready()
-// });
 
  // global constants
         var FFTSIZE = 32;      // number of samples for the analyser node FFT, min 32
@@ -44,18 +38,15 @@ var view = new View
 var playPreloadedSong = function() {
     src = assetsPath + $(this).attr("data-filename");
     console.log(src);
-            // register sound, which preloads by default
-            createjs.Sound.addEventListener("fileload", createjs.proxy(handleLoad,this)); // add an event listener for when load is completed
-            createjs.Sound.registerSound(src);
-            messageField.text = "loading audio";
-            stage.update();
-
-
-              //clears buttons off screen when song plays
-              view.elements();
-
-              //restart function is within play song function
-              $(".restart").on("dblclick", restartPreloadedSong);
+    // register sound, which preloads by default
+    createjs.Sound.addEventListener("fileload", createjs.proxy(handleLoad,this)); // add an event listener for when load is completed
+    createjs.Sound.registerSound(src);
+    messageField.text = "loading audio";
+    stage.update();
+    //clears buttons off screen when song plays
+    view.elements();
+    //restart function is within play song function
+    $(".restart").on("dblclick", restartPreloadedSong);
 
 }
 
@@ -66,16 +57,15 @@ var restartPreloadedSong = function() {
 }
 
 var playdownloadedSong = function() {
-            src = assetsPath + $(this).attr("data-filename");
-            console.log(src);
-            createjs.Sound.addEventListener("fileload", createjs.proxy(handleLoad,this)); // add an event listener for when load is completed
-            createjs.Sound.registerSound(src);
-            messageField.text = "loading audio";
-            stage.update();
-            // register sound, which preloads by default
-
-            //  gets rid of elements on page
-            view.elements();
+    src = assetsPath + $(this).attr("data-filename");
+    console.log(src);
+    // register sound, which preloads by default
+    createjs.Sound.addEventListener("fileload", createjs.proxy(handleLoad,this)); // add an event listener for when load is completed
+    createjs.Sound.registerSound(src);
+    messageField.text = "loading audio";
+    stage.update();
+    //  gets rid of elements on page
+    view.elements();
 }
 
 
@@ -94,26 +84,13 @@ $("#song-form").on("submit", function(event){
             $("#play-song-"+index+"").on('click', function(){
 
                 messageField.text = "please wait";
-
                 stage.update();
 
                 $.ajax({
                     url: "/songs",
                     type: "post",
-
-
                     data: {uri: value.uri, artist: value.artists[0].name, song: value.name}
                     }).done(function(response){
-
-                        console.log(value.artists[0].name);
-                        console.log(value.name);
-
-                        // src = assetsPath + $(this).attr("data-filename")
-                        console.log(response);
-                        // createjs.Sound.addEventListener("fileload", createjs.proxy(handleLoad,this)); // add an event listener for when load is completed
-                        // createjs.Sound.registerSound(src);
-
-                        //plays songs that have been downloaded
 
                         //restarts songs that have been downloaded
                         $(".restart").on("dblclick", function() {
@@ -127,11 +104,8 @@ $("#song-form").on("submit", function(event){
                                 type: "delete",
                                 data: {uri: value.uri, artist: value.artists[0].name, song: value.name}
                             }).done(function(response){
-                                console.log("delete song");
-                                console.log(response);
-                            })
+                               })
                         });
-
 
                     }).success(function(response){
                          messageField.text = "song done";
@@ -266,11 +240,7 @@ $("#song-form").on("submit", function(event){
             analyserNode.getFloatFrequencyData(freqFloatData);  // this gives us the dBs
             analyserNode.getByteFrequencyData(freqByteData);  // this gives us the frequency
             analyserNode.getByteTimeDomainData(timeByteData);  // this gives us the waveform
-            // var sum = 0;
-            // for(var i = 0; i < 8; i++){
-            //     sum += freqByteData[i]
-            // };
-            // console.log((sum - 600)/10);
+
             var lastRadius = 0;  // we use this to store the radius of the last circle, making them relative to each other
             // run through our array from last to first, 0 will evaluate to false (quicker)
             for(var i=0; i<CIRCLES; i++) {
@@ -306,16 +276,6 @@ $("#song-form").on("submit", function(event){
 
 
                 // height = (lastRadius/10) < 25 ? 0 : (lastRadius/10) < 35 ? 50 : (lastRadius/10) < 45 ? 100 : (lastRadius/10) < 55 ? 125 : (lastRadius/10) < 65 ? 150 :  (lastRadius/10) < 75 ? 175 : (lastRadius/10) > 85 ? 200 : 200
-
-                    // when < 30, lastRadius = 0
-                    // break
-                    // when > 40, lastRadius = 200
-                    // break
-                    // default 20* (lastRadius - 30)
-                    // break
-                    // 25, 35, 45, 55, 65, 75
-
-
 
 
                     function f(x) {
