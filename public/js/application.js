@@ -8,7 +8,7 @@
 
  // global constants
         var FFTSIZE = 32;      // number of samples for the analyser node FFT, min 32
-        var TICK_FREQ = 100;     // how often to run the tick function, in milliseconds
+        var TICK_FREQ = 50;     // how often to run the tick function, in milliseconds
         var CIRCLES = 8;        // the number of circles to draw.  This is also the amount to break the files into, so FFTSIZE/2 needs to divide by this evenly
         var RADIUS_FACTOR = 120; // the radius of the circles, factored for which ring we are drawing
         var MIN_RADIUS = 1;     // the minimum radius of each circle
@@ -139,7 +139,10 @@ $("#song-form").on("submit", function(event){
                         $("<button class='song-button' data-filename='"+value.artists[0].name+" - "+value.name+".mp3'>"+value.artists[0].name+" - "+value.name+"</button>").appendTo("#your-song");
                         $(".song-button").on("click", playdownloadedSong);
 
-                    });
+                    }).fail(function(){
+                        messageField.text = "cannot find song, please refresh and try another song";
+                         stage.update();
+                    })
                 });
             });
     console.log('Search by ' + song, data);
@@ -293,14 +296,24 @@ $("#song-form").on("submit", function(event){
 
                 var points = {};
                 var counter = 0;
+                // for (var i = 0; i < 200; i ++){
+                //     height = (lastRadius/10) < i * 25
+                // }
+                // height = (lastRadius/10) < 38 ? 0 : (lastRadius/10) > 45 ? 200 : ((lastRadius/10) -38) * (200/ (45-38))
+                // height = (lastRadius/10) < 25 ? 0 : (lastRadius/10) < 30 ? ((lastRadius/10) -25) * (200/ (30-25)) : (lastRadius/10) < 35 ? 25 : (lastRadius/10) < 40 ? ((lastRadius/10) -35) * (200/ (40-35)) : (lastRadius/10) < 45 ? 50 :  (lastRadius/10) < 50 ? ((lastRadius/10) -45) * (200/ (50-45)) : (lastRadius/10) < 55 ? 75 : (lastRadius/10) < 60 ? ((lastRadius/10) -55) * (200/ (60-55)) : (lastRadius/10) < 65 ? 100 : (lastRadius/10) < 70 ? ((lastRadius/10) -65) * (200/ (70-65)) : (lastRadius/10) < 75 ? 125 : (lastRadius/10) < 80 ? ((lastRadius/10) -75) * (200/ (80-75))  : (lastRadius/10) < 85 ? 150 : (lastRadius/10) < 90 ? ((lastRadius/10) -85) * (200/ (90-85)) : 200
+                // height = (lastRadius/10) < 25 ? 0 : (lastRadius/10) < 32 ? ((lastRadius/10) -25) * (200/ (32-25)) : (lastRadius/10) < 42 ? 25 : (lastRadius/10) < 40 ? ((lastRadius/10) -35) * (200/ (40-35)) : (lastRadius/10) < 45 ? 50 :  (lastRadius/10) < 50 ? ((lastRadius/10) -45) * (200/ (50-45)) : (lastRadius/10) < 55 ? 75 : (lastRadius/10) < 60 ? ((lastRadius/10) -55) * (200/ (60-55)) : (lastRadius/10) < 65 ? 100 : (lastRadius/10) < 70 ? ((lastRadius/10) -65) * (200/ (70-65)) : (lastRadius/10) < 75 ? 125 : (lastRadius/10) < 80 ? ((lastRadius/10) -75) * (200/ (80-75))  : (lastRadius/10) < 85 ? 150 : (lastRadius/10) < 90 ? ((lastRadius/10) -85) * (200/ (90-85)) : 200
+                height = (lastRadius/10) < 35 ? 1 : (lastRadius/10) > 70 ? 200 : ((lastRadius/10) -35) * (200/ (70-35))
 
-                height = (lastRadius/10) < 38 ? 0 : (lastRadius/10) > 45 ? 200 : ((lastRadius/10) -38) * (200/ (45-38))
+
+                // height = (lastRadius/10) < 25 ? 0 : (lastRadius/10) < 35 ? 50 : (lastRadius/10) < 45 ? 100 : (lastRadius/10) < 55 ? 125 : (lastRadius/10) < 65 ? 150 :  (lastRadius/10) < 75 ? 175 : (lastRadius/10) > 85 ? 200 : 200
+
                     // when < 30, lastRadius = 0
                     // break
                     // when > 40, lastRadius = 200
                     // break
                     // default 20* (lastRadius - 30)
                     // break
+                    // 25, 35, 45, 55, 65, 75
 
 
 
@@ -311,7 +324,7 @@ $("#song-form").on("submit", function(event){
 
                     if (canvas.getContext) {
                         var ctx = canvas.getContext("2d");
-                        ctx.lineWidth = (lastRadius/100) - (.5);
+                        ctx.lineWidth = (lastRadius/100) ;
                         var x = 0,
                             y = f(0);
                         interval = setInterval(function() {
@@ -321,7 +334,7 @@ $("#song-form").on("submit", function(event){
                                 ctx.moveTo(x, y);
                                 x += 1;
                                 y = f(x);
-                                points[x] = y;
+
                                 ctx.lineTo(x, y);
                                 ctx.stroke();
 
@@ -330,8 +343,11 @@ $("#song-form").on("submit", function(event){
 
 
                             } else {
-                                ctx.clearRect(0, 0, canvas.width, canvas.height);
-                                counter = 0
+                                setTimeout(function(){
+                            ctx.clearRect(0, 0, canvas.width, canvas.height);
+                            }, 200);
+
+                                counter = -10000
                                 ctx.stroke();
                             }
                             counter++;
