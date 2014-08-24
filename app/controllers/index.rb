@@ -28,8 +28,6 @@ delete "/deletesong" do
   artist = params[:artist]
   song_title = params[:song]
   track = "#{artist} - #{song_title}.mp3"
-  p "delete track"
-  p track
   FileUtils.pwd
   FileUtils.rm("public/sounds/#{track}")
 

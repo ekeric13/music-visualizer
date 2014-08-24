@@ -262,61 +262,53 @@ $("#song-form").on("submit", function(event){
 
                 // circles[i].graphics = g;
             }
-                // console.log(lastRadius);
 
-                var points = {};
-                var counter = 0;
-                // for (var i = 0; i < 200; i ++){
-                //     height = (lastRadius/10) < i * 25
-                // }
-                // height = (lastRadius/10) < 38 ? 0 : (lastRadius/10) > 45 ? 200 : ((lastRadius/10) -38) * (200/ (45-38))
-                // height = (lastRadius/10) < 25 ? 0 : (lastRadius/10) < 30 ? ((lastRadius/10) -25) * (200/ (30-25)) : (lastRadius/10) < 35 ? 25 : (lastRadius/10) < 40 ? ((lastRadius/10) -35) * (200/ (40-35)) : (lastRadius/10) < 45 ? 50 :  (lastRadius/10) < 50 ? ((lastRadius/10) -45) * (200/ (50-45)) : (lastRadius/10) < 55 ? 75 : (lastRadius/10) < 60 ? ((lastRadius/10) -55) * (200/ (60-55)) : (lastRadius/10) < 65 ? 100 : (lastRadius/10) < 70 ? ((lastRadius/10) -65) * (200/ (70-65)) : (lastRadius/10) < 75 ? 125 : (lastRadius/10) < 80 ? ((lastRadius/10) -75) * (200/ (80-75))  : (lastRadius/10) < 85 ? 150 : (lastRadius/10) < 90 ? ((lastRadius/10) -85) * (200/ (90-85)) : 200
-                // height = (lastRadius/10) < 25 ? 0 : (lastRadius/10) < 32 ? ((lastRadius/10) -25) * (200/ (32-25)) : (lastRadius/10) < 42 ? 25 : (lastRadius/10) < 40 ? ((lastRadius/10) -35) * (200/ (40-35)) : (lastRadius/10) < 45 ? 50 :  (lastRadius/10) < 50 ? ((lastRadius/10) -45) * (200/ (50-45)) : (lastRadius/10) < 55 ? 75 : (lastRadius/10) < 60 ? ((lastRadius/10) -55) * (200/ (60-55)) : (lastRadius/10) < 65 ? 100 : (lastRadius/10) < 70 ? ((lastRadius/10) -65) * (200/ (70-65)) : (lastRadius/10) < 75 ? 125 : (lastRadius/10) < 80 ? ((lastRadius/10) -75) * (200/ (80-75))  : (lastRadius/10) < 85 ? 150 : (lastRadius/10) < 90 ? ((lastRadius/10) -85) * (200/ (90-85)) : 200
-                height = (lastRadius/10) < 35 ? 1 : (lastRadius/10) > 70 ? 200 : ((lastRadius/10) -35) * (200/ (70-35))
+            var points = {};
+            var counter = 0;
+            // for (var i = 0; i < 200; i ++){
+            //     height = (lastRadius/10) < i * 25
+            // }
 
+            // height = (lastRadius/10) < 25 ? 0 : (lastRadius/10) < 35 ? 50 : (lastRadius/10) < 45 ? 100 : (lastRadius/10) < 55 ? 125 : (lastRadius/10) < 65 ? 150 :  (lastRadius/10) < 75 ? 175 : (lastRadius/10) > 85 ? 200 : 200
+            // height = (lastRadius/10) < 38 ? 0 : (lastRadius/10) > 45 ? 200 : ((lastRadius/10) -38) * (200/ (45-38))
+            // height = (lastRadius/10) < 25 ? 0 : (lastRadius/10) < 30 ? ((lastRadius/10) -25) * (200/ (30-25)) : (lastRadius/10) < 35 ? 25 : (lastRadius/10) < 40 ? ((lastRadius/10) -35) * (200/ (40-35)) : (lastRadius/10) < 45 ? 50 :  (lastRadius/10) < 50 ? ((lastRadius/10) -45) * (200/ (50-45)) : (lastRadius/10) < 55 ? 75 : (lastRadius/10) < 60 ? ((lastRadius/10) -55) * (200/ (60-55)) : (lastRadius/10) < 65 ? 100 : (lastRadius/10) < 70 ? ((lastRadius/10) -65) * (200/ (70-65)) : (lastRadius/10) < 75 ? 125 : (lastRadius/10) < 80 ? ((lastRadius/10) -75) * (200/ (80-75))  : (lastRadius/10) < 85 ? 150 : (lastRadius/10) < 90 ? ((lastRadius/10) -85) * (200/ (90-85)) : 200
+            // height = (lastRadius/10) < 25 ? 0 : (lastRadius/10) < 32 ? ((lastRadius/10) -25) * (200/ (32-25)) : (lastRadius/10) < 42 ? 25 : (lastRadius/10) < 40 ? ((lastRadius/10) -35) * (200/ (40-35)) : (lastRadius/10) < 45 ? 50 :  (lastRadius/10) < 50 ? ((lastRadius/10) -45) * (200/ (50-45)) : (lastRadius/10) < 55 ? 75 : (lastRadius/10) < 60 ? ((lastRadius/10) -55) * (200/ (60-55)) : (lastRadius/10) < 65 ? 100 : (lastRadius/10) < 70 ? ((lastRadius/10) -65) * (200/ (70-65)) : (lastRadius/10) < 75 ? 125 : (lastRadius/10) < 80 ? ((lastRadius/10) -75) * (200/ (80-75))  : (lastRadius/10) < 85 ? 150 : (lastRadius/10) < 90 ? ((lastRadius/10) -85) * (200/ (90-85)) : 200
+            height = (lastRadius/10) < 35 ? 1 : (lastRadius/10) > 70 ? 200 : ((lastRadius/10) -35) * (200/ (70-35))
 
-                // height = (lastRadius/10) < 25 ? 0 : (lastRadius/10) < 35 ? 50 : (lastRadius/10) < 45 ? 100 : (lastRadius/10) < 55 ? 125 : (lastRadius/10) < 65 ? 150 :  (lastRadius/10) < 75 ? 175 : (lastRadius/10) > 85 ? 200 : 200
+            //draws y
+            function f(x) {
+                return (height) * Math.sin(0.04 * x) + (canvas.height/2);
+            }
 
-
-                    function f(x) {
-                        return (height) * Math.sin(0.04 * x) + (canvas.height/2);
-                    }
-
-                    if (canvas.getContext) {
-                        var ctx = canvas.getContext("2d");
-                        ctx.lineWidth = (lastRadius/100) ;
-                        var x = 0,
-                            y = f(0);
-                        interval = setInterval(function() {
-                            if(counter < canvas.width) {
-
-                                ctx.beginPath();
-                                ctx.moveTo(x, y);
-                                x += 1;
-                                y = f(x);
-
-                                ctx.lineTo(x, y);
-                                ctx.stroke();
-
-                                ctx.strokeStyle = color;
-                                ctx.lineCap = 'round';
-
-
-                            } else {
-                                setTimeout(function(){
-                            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            //makes sine waves
+            if (canvas.getContext) {
+                var ctx = canvas.getContext("2d");
+                ctx.lineWidth = (lastRadius/100) ;
+                var x = 0,
+                y = f(0);
+                interval = setInterval(function() {
+                    if(counter < canvas.width) {
+                        ctx.beginPath();
+                        ctx.moveTo(x, y);
+                        x += 1;
+                        y = f(x);
+                        ctx.lineTo(x, y);
+                        ctx.stroke();
+                        ctx.strokeStyle = color;
+                        ctx.lineCap = 'round';
+                        } else {
+                            setTimeout(function(){
+                                ctx.clearRect(0, 0, canvas.width, canvas.height);
                             }, 200);
 
-                                counter = -10000
-                                ctx.stroke();
-                            }
-                            counter++;
-                        }, 55 - (lastRadius/10));
-                    }
-                    console.log(lastRadius/10);
-
-
-
+                            counter = -10000
+                            ctx.stroke();
+                        }
+                        counter++;
+                    },
+                55 - (lastRadius/10));
+            }
+            console.log(lastRadius/10);
 
 
             // update our dataAverage, by removing the first element and pushing in the new last element
