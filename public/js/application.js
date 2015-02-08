@@ -17,7 +17,7 @@
         var h, w;               // variables to store the width and height of the canvas
         var centerX, centerY;   // variables to hold the center point, so that tick is quicker
         var messageField;          // Message display field
-        var assetsPath = "/sounds/"; // Create a single item to load.
+        var assetsPath = "SoundJS/sounds/"; // Create a single item to load.
         var src ;  // set up our source
         var soundInstance;      // the sound instance we create
         var analyserNode;       // the analyser node that allows us to visualize the audio
