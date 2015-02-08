@@ -33,7 +33,7 @@ build/
 # unless supporting rvm < 1.11.0 or doing something fancy, ignore this:
 .rvmrc
 
-*.mp3
+# Add mp3's to github: *.mp3
 *.ogg
 FILE_NAME
 *.config
